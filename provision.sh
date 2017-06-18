@@ -5,6 +5,7 @@ ip=$1
 cluster_network_first_node_ip=$2
 cluster_network=$3
 cluster_ip=$4
+storage_ip=$5
 fqdn=$(hostname --fqdn)
 dn=$(hostname)
 
@@ -29,6 +30,12 @@ auto eth2
 iface eth2 inet static
     # corosync network.
     address $cluster_ip
+    netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+    # storage network.
+    address $storage_ip
     netmask 255.255.255.0
 
 auto vmbr0
@@ -66,6 +73,7 @@ cat >>/etc/issue <<EOF
 EOF
 ifup vmbr0
 ifup eth2
+ifup eth3
 iptables-save # show current rules.
 killall agetty | true # force them to re-display the issue file.
 

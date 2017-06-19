@@ -63,6 +63,7 @@ Vagrant.configure('2') do |config|
           storage_ip
         ]
       config.vm.provision :reload
+      config.vm.provision :shell, path: 'provision-pveproxy-certificate.sh', args: service_ip
       config.vm.provision :shell, path: 'provision-storage.sh', args: [
           storage_network_first_node_ip,
           storage_network,

@@ -25,6 +25,34 @@ vagrant plugin install vagrant-triggers # see https://github.com/emyl/vagrant-tr
 
 Run `vagrant up` to launch the 3-node cluster.
 
+Trust the Example CA. If your host is Ubuntu based, run, in a bash shell:
+
+```bash
+# for OpenSSL based applications (e.g. wget, curl, http):
+sudo cp shared/example-ca/example-ca-crt.pem /usr/local/share/ca-certificates/example-ca.crt
+sudo update-ca-certificates -v
+# for NSS based applications (e.g. chromium, chrome):
+# see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Tools
+sudo apt install -y libnss3-tools
+certutil -d sql:$HOME/.pki/nssdb -A -t 'C,,' -n example-ca -i shared/example-ca/example-ca-crt.pem
+certutil -d sql:$HOME/.pki/nssdb -L
+#certutil -d sql:$HOME/.pki/nssdb -D -n example-ca # delete.
+# for legacy NSS based applications (e.g. firefox):
+for d in $HOME/.mozilla/firefox/*.default; do
+  certutil -d dbm:$d -A -t 'C,,' -n example-ca -i shared/example-ca/example-ca-crt.pem
+  certutil -d dbm:$d -L
+  #certutil -d sql:$d -D -n example-ca # delete.
+done
+```
+
+If your host is Windows based, run, in a Administrator PowerShell shell:
+
+```powershell
+Import-Certificate `
+    -FilePath shared/example-ca/example-ca-crt.der `
+    -CertStoreLocation Cert:/LocalMachine/Root
+```
+
 Access the Proxmox Web Administration endpoint at either one of the nodes, e.g., at [https://pve1.example.com:8006](https://pve1.example.com:8006).
 
 Login as `root` and use the `vagrant` password.

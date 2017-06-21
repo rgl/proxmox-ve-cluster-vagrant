@@ -23,7 +23,7 @@ vagrant plugin install vagrant-reload   # see https://github.com/aidanns/vagrant
 vagrant plugin install vagrant-triggers # see https://github.com/emyl/vagrant-triggers
 ```
 
-Run `vagrant up` to launch the 3-node cluster.
+Run `vagrant up --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.
 
 Trust the Example CA. If your host is Ubuntu based, run, in a bash shell:
 

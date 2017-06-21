@@ -62,3 +62,4 @@ Login as `root` and use the `vagrant` password.
  * [Proxmox VE Cluster Manager](https://pve.proxmox.com/wiki/Cluster_Manager)
  * [Proxmox VE Ceph Server](https://pve.proxmox.com/wiki/Ceph_Server)
  * [Proxmox VE RADOS Block Device (RBD) Storage Pool Type](https://pve.proxmox.com/wiki/Storage:_RBD)
+ * [Ceph Intro and Architectural Overview by Ross Turk](https://www.youtube.com/watch?v=OyH1C0C4HzM)

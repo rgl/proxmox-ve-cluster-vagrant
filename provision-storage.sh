@@ -62,3 +62,4 @@ pveceph createosd $osd_disk_device
 
 # show the storage status.
 pvesm status
+ceph -s

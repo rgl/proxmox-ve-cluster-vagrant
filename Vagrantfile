@@ -1,3 +1,7 @@
+# to make sure the pve1 node is created before the other nodes, we
+# have to force a --no-parallel execution.
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
 number_of_nodes = 3
 service_network_first_node_ip = '10.1.0.201'
 cluster_network_first_node_ip = '10.2.0.201'; cluster_network='10.2.0.0'

@@ -5,11 +5,14 @@
     <id>UMLDeployment</id>
     <coordinates>
       <x>60</x>
-      <y>60</y>
+      <y>20</y>
       <w>560</w>
-      <h>200</h>
+      <h>240</h>
     </coordinates>
-    <panel_attributes>pveN.example.com</panel_attributes>
+    <panel_attributes>pveN.example.com
+10.1.0.20N
+10.2.0.20N
+10.3.0.20N</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -171,7 +174,7 @@ vmN
       <w>30</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
+    <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
@@ -294,5 +297,43 @@ vmN
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;110.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLDeployment</id>
+    <coordinates>
+      <x>660</x>
+      <y>20</y>
+      <w>190</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>gateway.example.com
+10.1.0.254
+DHCP
+DNS
+NFS
+SMTP/IMAP</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>590</x>
+      <y>250</y>
+      <w>180</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>160.0;10.0;160.0;60.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>710</x>
+      <y>230</y>
+      <w>80</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>eth1</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

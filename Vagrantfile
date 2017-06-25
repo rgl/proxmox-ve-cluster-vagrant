@@ -6,6 +6,7 @@ number_of_nodes = 3
 service_network_first_node_ip = '10.1.0.201'
 cluster_network_first_node_ip = '10.2.0.201'; cluster_network='10.2.0.0'
 storage_network_first_node_ip = '10.3.0.201'; storage_network='10.3.0.0'
+gateway_ip = '10.1.0.254'
 
 require 'ipaddr'
 service_ip_addr = IPAddr.new service_network_first_node_ip
@@ -33,6 +34,26 @@ Vagrant.configure('2') do |config|
     vb.memory = 3*1024
     vb.cpus = 4
   end
+  config.vm.define 'gateway' do |config|
+    config.vm.box = 'ubuntu-16.04-amd64'
+    config.vm.provider :libvirt do |lv|
+      lv.memory = 512
+    end
+    config.vm.provider :virtualbox do |vb|
+      vb.memory = 512
+    end
+    config.vm.hostname = 'gateway.example.com'
+    config.vm.network :private_network, ip: gateway_ip, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
+    certificate_ip_addr = service_ip_addr.clone
+    (1..number_of_nodes).each do |n|
+      certificate_ip = certificate_ip_addr.to_s; certificate_ip_addr = certificate_ip_addr.succ
+      config.vm.provision :shell, path: 'provision-certificate.sh', args: ["pve#{n}.example.com", certificate_ip]
+    end
+    config.vm.provision :shell, path: 'provision-certificate.sh', args: ['example.com', gateway_ip]
+    config.vm.provision :shell, path: 'provision-gateway.sh', args: gateway_ip
+    config.vm.provision :shell, path: 'provision-postfix.sh'
+    config.vm.provision :shell, path: 'provision-dovecot.sh'
+  end
   (1..number_of_nodes).each do |n|
     name = "pve#{n}"
     fqdn = "#{name}.example.com"
@@ -41,9 +62,9 @@ Vagrant.configure('2') do |config|
     storage_ip = storage_ip_addr.to_s; storage_ip_addr = storage_ip_addr.succ
     config.vm.define name do |config|
       config.vm.hostname = fqdn
-      config.vm.network :private_network, ip: service_ip, auto_config: false
-      config.vm.network :private_network, ip: cluster_ip, auto_config: false
-      config.vm.network :private_network, ip: storage_ip, auto_config: false
+      config.vm.network :private_network, ip: service_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
+      config.vm.network :private_network, ip: cluster_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
+      config.vm.network :private_network, ip: storage_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
       config.vm.provider :libvirt do |lv|
         lv.storage :file, :size => '30G'
       end
@@ -64,7 +85,8 @@ Vagrant.configure('2') do |config|
           cluster_network_first_node_ip,
           cluster_network,
           cluster_ip,
-          storage_ip
+          storage_ip,
+          gateway_ip
         ]
       config.vm.provision :reload
       config.vm.provision :shell, path: 'provision-pveproxy-certificate.sh', args: service_ip

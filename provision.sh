@@ -6,13 +6,15 @@ cluster_network_first_node_ip=$2
 cluster_network=$3
 cluster_ip=$4
 storage_ip=$5
+gateway_ip=$6
 fqdn=$(hostname --fqdn)
+domain=$(hostname --domain)
 dn=$(hostname)
 
 # configure apt for non-interactive mode.
 export DEBIAN_FRONTEND=noninteractive
 
-# configure the network for NATting.
+# configure the network.
 ifdown vmbr0
 cat >/etc/network/interfaces <<EOF
 auto lo
@@ -46,11 +48,13 @@ iface vmbr0 inet static
     bridge_ports eth1
     bridge_stp off
     bridge_fd 0
-    # enable IP forwarding. needed to NAT and DNAT.
-    post-up   echo 1 >/proc/sys/net/ipv4/ip_forward
-    # NAT through eth0.
-    post-up   iptables -t nat -A POSTROUTING -s '$ip/24' ! -d '$ip/24' -o eth0 -j MASQUERADE
-    post-down iptables -t nat -D POSTROUTING -s '$ip/24' ! -d '$ip/24' -o eth0 -j MASQUERADE
+EOF
+cat >>/etc/dhcp/dhclient.conf <<EOF
+# make sure resolv.conf will always have our gateway dns server.
+supersede domain-name-servers $gateway_ip;
+EOF
+cat >/etc/resolv.conf <<EOF
+nameserver $gateway_ip
 EOF
 cat >/etc/hosts <<EOF
 127.0.0.1 localhost.localdomain localhost
@@ -76,6 +80,20 @@ ifup eth2
 ifup eth3
 iptables-save # show current rules.
 killall agetty | true # force them to re-display the issue file.
+
+# configure postfix to relay emails through our gateway.
+echo $domain >/etc/mailname
+postconf -e 'myorigin = /etc/mailname'
+postconf -e 'mydestination = '
+postconf -e "relayhost = $domain"
+postconf -e 'inet_protocols = ipv4'
+systemctl reload postfix
+# send test email.
+sendmail root <<EOF
+Subject: Hello World from `hostname --fqdn` at `date --iso-8601=seconds`
+
+Hello World! 
+EOF
 
 # disable the "You do not have a valid subscription for this server. Please visit www.proxmox.com to get a list of available options."
 # message that appears each time you logon the web-ui.
@@ -129,11 +147,16 @@ cat >/etc/motd <<'EOF'
 
 EOF
 
-# configure the keyboard.
 if [ "$cluster_ip" == "$cluster_network_first_node_ip" ]; then
-    cat >/etc/pve/datacenter.cfg <<'EOF'
-keyboard: pt
-EOF
+    # configure the keyboard.
+    echo 'keyboard: pt' >>/etc/pve/datacenter.cfg
+    # add the iso-templates shared storage pool.
+    pvesm nfsscan $gateway_ip
+    pvesm add nfs iso-templates \
+        --server $gateway_ip \
+        --export /srv/nfs/iso-templates \
+        --options vers=3 \
+        --content iso,vztmpl
 fi
 
 # create the cluster or add the node to the cluster.

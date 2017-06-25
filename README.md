@@ -11,6 +11,7 @@ Build and install the [proxmox-ve Base Box](https://github.com/rgl/proxmox-ve).
 Add the following entries to your `/etc/hosts` file:
 
 ```
+10.1.0.254 example.com
 10.1.0.201 pve1.example.com
 10.1.0.202 pve2.example.com
 10.1.0.203 pve3.example.com
@@ -37,8 +38,8 @@ sudo apt install -y libnss3-tools
 certutil -d sql:$HOME/.pki/nssdb -A -t 'C,,' -n example-ca -i shared/example-ca/example-ca-crt.pem
 certutil -d sql:$HOME/.pki/nssdb -L
 #certutil -d sql:$HOME/.pki/nssdb -D -n example-ca # delete.
-# for legacy NSS based applications (e.g. firefox):
-for d in $HOME/.mozilla/firefox/*.default; do
+# for legacy NSS based applications (e.g. firefox, thunderbird):
+for d in $HOME/.mozilla/firefox/*.default $HOME/.thunderbird/*.default; do
   certutil -d dbm:$d -A -t 'C,,' -n example-ca -i shared/example-ca/example-ca-crt.pem
   certutil -d dbm:$d -L
   #certutil -d sql:$d -D -n example-ca # delete.

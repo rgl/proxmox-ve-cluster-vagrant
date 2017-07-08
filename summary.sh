@@ -11,6 +11,12 @@ export DEBIAN_FRONTEND=noninteractive
 pvecm status || true
 pvecm nodes
 
+# show storage status.
+pvesm status
+pveceph lspools
+ceph -s
+ceph osd tree
+
 # show running containers.
 pct list
 

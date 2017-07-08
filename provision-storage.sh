@@ -65,7 +65,3 @@ fi
 
 # create an OSD in a disk.
 pveceph createosd $osd_disk_device
-
-# show the storage status.
-pvesm status
-ceph -s

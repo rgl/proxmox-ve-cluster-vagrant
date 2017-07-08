@@ -27,6 +27,9 @@ if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
     pveceph init --network $storage_network
     pveceph createmon
     mkdir /etc/pve/priv/ceph
+
+    # delete the default rbd storage pool.
+    pveceph destroypool rbd
     pve_pool_name='ceph-lxc'
     cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph/$pve_pool_name.keyring
     pveceph createpool $pve_pool_name \

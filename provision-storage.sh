@@ -24,32 +24,35 @@ yes | pveceph install
 # see https://pve.proxmox.com/pve-docs/pvesm.1.html
 # run pveceph help createpool
 if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
+    # initialize ceph.
     pveceph init --network $storage_network
     pveceph createmon
     mkdir /etc/pve/priv/ceph
 
     # delete the default rbd storage pool.
     pveceph destroypool rbd
+
+    # create a storage pool for lxc containers.
     pve_pool_name='ceph-lxc'
     cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph/$pve_pool_name.keyring
     pveceph createpool $pve_pool_name \
         --size 3 \
         --min_size 2 \
-        --pg_num 64 \
-        --crush_ruleset 0
+        --pg_num 64
     pvesm add rbd $pve_pool_name \
         --monhost $storage_monitor_ips \
         --content rootdir \
         --krbd 1 \
         --pool $pve_pool_name \
         --username admin
+
+    # create a storage pool for virtual machines.
     pve_pool_name='ceph-vm'
     cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph/$pve_pool_name.keyring
     pveceph createpool $pve_pool_name \
         --size 3 \
         --min_size 2 \
-        --pg_num 64 \
-        --crush_ruleset 0
+        --pg_num 64
     pvesm add rbd $pve_pool_name \
         --monhost $storage_monitor_ips \
         --content images \

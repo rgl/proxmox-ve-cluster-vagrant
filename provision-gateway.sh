@@ -3,6 +3,12 @@ set -eux
 
 ip=$1
 
+# configure apt for non-interactive mode.
+export DEBIAN_FRONTEND=noninteractive
+
+# update the package cache.
+apt-get update
+
 # install tcpdump to locally being able to capture network traffic.
 apt-get install -y tcpdump
 

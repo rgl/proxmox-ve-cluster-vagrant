@@ -14,6 +14,9 @@ dn=$(hostname)
 # configure apt for non-interactive mode.
 export DEBIAN_FRONTEND=noninteractive
 
+# update the package cache.
+apt-get update
+
 # configure the network.
 ifdown vmbr0
 cat >/etc/network/interfaces <<EOF

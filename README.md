@@ -4,6 +4,11 @@ Each node has the following components and is connected to the following network
 
 ![](cluster.png)
 
+The second node (`pve2.example.com`) is running:
+
+* One Alpine Linux container provisioned by [provision-alpine-template-container.sh](provision-alpine-template-container.sh) and booted from the alpine template.
+  * You can login with the `root` username and `vagrant` password.
+
 # Usage
 
 Build and install the [proxmox-ve Base Box](https://github.com/rgl/proxmox-ve).

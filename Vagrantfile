@@ -96,6 +96,7 @@ Vagrant.configure('2') do |config|
           storage_ip,
           storage_monitor_ips
         ]
+      config.vm.provision :shell, path: 'provision-alpine-template-container.sh', args: [service_ip, gateway_ip]
       config.vm.provision :shell, path: 'summary.sh', args: service_ip
     end
   end

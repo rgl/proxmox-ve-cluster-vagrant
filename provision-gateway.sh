@@ -64,7 +64,7 @@ EOF
 # setup NAT.
 # see https://help.ubuntu.com/community/IptablesHowTo
 
-apt-get install -y iptables
+apt-get install -y iptables iptables-persistent
 
 # enable IPv4 forwarding.
 sysctl net.ipv4.ip_forward=1
@@ -74,12 +74,7 @@ sed -i -E 's,^\s*#?\s*(net.ipv4.ip_forward=).+,\11,g' /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -s "$ip/24" ! -d "$ip/24" -o eth0 -j MASQUERADE
 
 # load iptables rules on boot.
-iptables-save >/etc/iptables-rules-v4.conf
-cat >/etc/network/if-pre-up.d/iptables-restore <<'EOF'
-#!/bin/sh
-iptables-restore </etc/iptables-rules-v4.conf
-EOF
-chmod +x /etc/network/if-pre-up.d/iptables-restore
+iptables-save >/etc/iptables/rules.v4
 
 
 #
@@ -88,6 +83,11 @@ chmod +x /etc/network/if-pre-up.d/iptables-restore
 # see http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html
 
 apt-get install -y dnsutils dnsmasq
+systemctl stop systemd-resolved
+systemctl disable systemd-resolved
+cat >/etc/resolv.conf <<'EOF'
+nameserver 127.0.0.1
+EOF
 cat >/etc/dnsmasq.d/local.conf <<EOF
 interface=eth1
 dhcp-range=10.1.0.2,10.1.0.200,1m

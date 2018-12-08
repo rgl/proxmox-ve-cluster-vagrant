@@ -35,7 +35,7 @@ Vagrant.configure('2') do |config|
     vb.cpus = 4
   end
   config.vm.define 'gateway' do |config|
-    config.vm.box = 'ubuntu-16.04-amd64'
+    config.vm.box = 'ubuntu-18.04-amd64'
     config.vm.provider :libvirt do |lv|
       lv.memory = 512
     end

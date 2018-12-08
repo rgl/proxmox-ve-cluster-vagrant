@@ -28,6 +28,11 @@ for pve_id in 100; do
     pve_disk_size=32M
     pvesm alloc $pve_storage_id $pve_id vm-$pve_id-disk-1 $pve_disk_size
     if [[ "$pve_storage_id" =~ ^ceph-.+ ]]; then
+        # NB disable unsupported rdb device features not supported by the kernel. if we do not disable
+        #    these features, rbd map fails with the following dmesg message:
+        #     rbd: image vm-100-disk-1: image uses unsupported features: 0x38
+        # NB the proxmox ui creates container images with only the layering feature enabled.
+        rbd feature disable $pve_storage_id/vm-$pve_id-disk-1 exclusive-lock,object-map,fast-diff,deep-flatten
         rbd map $pve_storage_id/vm-$pve_id-disk-1
         rbd showmapped
         rbd ls $pve_storage_id
@@ -35,6 +40,9 @@ for pve_id in 100; do
     fi
     pvesm status
     mkfs.ext4 $(pvesm path $pve_storage_id:vm-$pve_id-disk-1)
+    if [[ "$pve_storage_id" =~ ^ceph-.+ ]]; then
+        rbd unmap $pve_storage_id/vm-$pve_id-disk-1
+    fi
     pct create $pve_id \
         iso-templates:vztmpl/$pve_template \
         -onboot 1 \

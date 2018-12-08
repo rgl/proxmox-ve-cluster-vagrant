@@ -22,12 +22,13 @@ end.join(';')
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'proxmox-ve-amd64'
-  config.vm.provider :libvirt do |lv|
+  config.vm.provider :libvirt do |lv, config|
     lv.memory = 3*1024
     lv.cpus = 4
     lv.cpu_mode = 'host-passthrough'
     lv.nested = true
     lv.keymap = 'pt'
+    config.vm.synced_folder '.', '/vagrant', type: 'nfs'
   end
   config.vm.provider :virtualbox do |vb|
     vb.linked_clone = true

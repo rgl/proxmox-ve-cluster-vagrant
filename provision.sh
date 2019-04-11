@@ -154,7 +154,7 @@ if [ "$cluster_ip" == "$cluster_network_first_node_ip" ]; then
     # configure the keyboard.
     echo 'keyboard: pt' >>/etc/pve/datacenter.cfg
     # add the iso-templates shared storage pool.
-    pvesm nfsscan $gateway_ip
+    pvesm scan nfs $gateway_ip
     pvesm add nfs iso-templates \
         --server $gateway_ip \
         --export /srv/nfs/iso-templates \

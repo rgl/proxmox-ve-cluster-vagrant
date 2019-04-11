@@ -107,3 +107,9 @@ cat >>/etc/exports <<EOF
 /srv/nfs/iso-templates $ip/24(fsid=0,rw,no_subtree_check)
 EOF
 systemctl restart nfs-kernel-server
+
+# test access to the NFS server using NFSv3 (UDP and TCP) and NFSv4 (TCP).
+showmount -e $ip
+rpcinfo -u $ip nfs 3
+rpcinfo -t $ip nfs 3
+rpcinfo -t $ip nfs 4

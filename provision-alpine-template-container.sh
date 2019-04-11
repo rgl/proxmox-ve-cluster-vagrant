@@ -18,7 +18,7 @@ pveam update
 pveam available # show templates.
 
 # download the alpine template to the iso-templates shared storage.
-pve_template=alpine-3.8-default_20180913_amd64.tar.xz
+pve_template=alpine-3.9-default_20190224_amd64.tar.xz
 pveam download iso-templates $pve_template
 
 # create and start a container.

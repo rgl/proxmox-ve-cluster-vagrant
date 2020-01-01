@@ -18,11 +18,11 @@ if [[ "$dn" != 'pve2' ]]; then
 fi
 
 # download the alpine iso to the iso-templates shared storage.
-alpine_iso=alpine-virt-3.9.3-x86_64.iso
+alpine_iso=alpine-virt-3.11.2-x86_64.iso
 alpine_iso_volume=iso-templates:iso/$alpine_iso
 alpine_iso_path=$(pvesm path $alpine_iso_volume)
 if [[ ! -f $alpine_iso_path ]]; then
-    wget -qO $alpine_iso_path http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/$alpine_iso
+    wget -qO $alpine_iso_path http://dl-cdn.alpinelinux.org/alpine/v3.11/releases/x86_64/$alpine_iso
 fi
 
 # create and start a virtual machine.

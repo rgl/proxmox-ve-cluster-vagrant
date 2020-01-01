@@ -92,6 +92,9 @@ cat >/etc/dnsmasq.d/local.conf <<EOF
 interface=eth1
 dhcp-range=10.1.0.2,10.1.0.200,1m
 host-record=example.com,$ip
+host-record=pve1.example.com,10.1.0.201
+host-record=pve2.example.com,10.1.0.202
+host-record=pve3.example.com,10.1.0.203
 server=8.8.8.8
 EOF
 systemctl restart dnsmasq

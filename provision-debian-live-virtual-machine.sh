@@ -17,12 +17,12 @@ if [[ "$dn" != 'pve2' ]]; then
     exit 0
 fi
 
-# download the alpine iso to the iso-templates shared storage.
-alpine_iso=alpine-virt-3.11.2-x86_64.iso
-alpine_iso_volume=iso-templates:iso/$alpine_iso
-alpine_iso_path=$(pvesm path $alpine_iso_volume)
-if [[ ! -f $alpine_iso_path ]]; then
-    wget -qO $alpine_iso_path http://dl-cdn.alpinelinux.org/alpine/v3.11/releases/x86_64/$alpine_iso
+# download the iso to the iso-templates shared storage.
+iso_url=https://github.com/rgl/debian-live-builder-vagrant/releases/download/v20200101/debian-live-20200101-amd64.iso
+iso_volume=iso-templates:iso/$(basename $iso_url)
+iso_path=$(pvesm path $iso_volume)
+if [[ ! -f $iso_path ]]; then
+    wget -qO $iso_path $iso_url
 fi
 
 # create and start a virtual machine.
@@ -37,17 +37,18 @@ for pve_id in 110; do
     fi
     pvesm status
     qm create $pve_id \
-        -name alpine-$pve_id \
+        -name debian-live-$pve_id \
         -keyboard pt \
         -onboot 1 \
         -ostype l26 \
         -cpu host \
         -cores 1 \
-        -memory 64 \
-        -cdrom $alpine_iso_volume \
+        -memory 512 \
+        -cdrom $iso_volume \
         -scsihw virtio-scsi-pci \
         -virtio0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
-        -net0 model=virtio,bridge=vmbr0
+        -net0 model=virtio,bridge=vmbr0 \
+        -args '-device virtio-rng-pci'
     qm config $pve_id # show config.
     qm start $pve_id
     qm status $pve_id

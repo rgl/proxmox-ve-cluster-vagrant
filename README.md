@@ -8,8 +8,8 @@ The second node (`pve2.example.com`) is running:
 
 * One Alpine Linux container provisioned by [provision-alpine-template-container.sh](provision-alpine-template-container.sh) and booted from the alpine template.
   * You can login with the `root` username and `vagrant` password.
-* One Alpine Linux virtual machine provisioned by [provision-alpine-iso-virtual-machine.sh](provision-alpine-iso-virtual-machine.sh) and booted from the [alpine virtual](https://alpinelinux.org/downloads/) iso.
-  * You can login with the `root` username and no password.
+* One Debian Live virtual machine provisioned by [provision-debian-live-virtual-machine.sh](provision-debian-live-virtual-machine.sh) and booted from the [rgl/debian-live-builder-vagrant](https://github.com/rgl/debian-live-builder-vagrant) iso.
+  * You can login with the `vagrant` username and no password.
   * **NB** This does not work in VirtualBox because it has no support for nested virtualization.
 
 # Usage

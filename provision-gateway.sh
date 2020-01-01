@@ -106,8 +106,10 @@ systemctl restart dnsmasq
 
 apt-get install -y nfs-kernel-server
 install -d -o nobody -g nogroup -m 700 /srv/nfs/iso-templates
+install -d -o nobody -g nogroup -m 700 /srv/nfs/snippets
 install -d -m 700 /etc/exports.d
 echo "/srv/nfs/iso-templates $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d/iso-templates.exports
+echo "/srv/nfs/snippets $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d/snippets.exports
 exportfs -a
 
 # test access to the NFS server using NFSv3 (UDP and TCP) and NFSv4 (TCP).
@@ -115,3 +117,11 @@ showmount -e $ip
 rpcinfo -u $ip nfs 3
 rpcinfo -t $ip nfs 3
 rpcinfo -t $ip nfs 4
+
+
+#
+# create a ssh key-pair and copy it to the host so it can be used in
+# cloud-init configurations to allow us to login with an ssh key.
+
+ssh-keygen -f ~/.ssh/id_rsa -t rsa -b 2048 -C "$USER@$(hostname)" -N ''
+cp ~/.ssh/id_rsa.pub "/vagrant/shared/$(hostname)-$USER-rsa-ssh-key.pub"

@@ -36,17 +36,36 @@ for pve_id in 110; do
         rbd info $pve_storage_id/vm-$pve_id-disk-1
     fi
     pvesm status
+    cloud_init_user_data_volume="snippets:snippets/vm-$pve_id-cloud-init-user-data.yaml"
+    # NB this file is not automatically deleted when you delete the VM from the proxmox UI.
+    cat >$(pvesm path $cloud_init_user_data_volume) <<EOF
+#cloud-config
+hostname: debian-live-$pve_id
+users:
+  - name: vagrant
+    ssh_authorized_keys:
+      - $(cat /vagrant/shared/gateway-root-rsa-ssh-key.pub)
+packages:
+  - qemu-guest-agent
+runcmd:
+  - systemctl start qemu-guest-agent
+EOF
     qm create $pve_id \
         -name debian-live-$pve_id \
         -keyboard pt \
+        -agent enabled=1 \
         -onboot 1 \
         -ostype l26 \
         -cpu host \
-        -cores 1 \
+        -cores 4 \
         -memory 512 \
-        -cdrom $iso_volume \
+        -cdrom $pve_storage_id:vm-$pve_id-cloudinit \
+        -cicustom user=$cloud_init_user_data_volume \
         -scsihw virtio-scsi-pci \
         -virtio0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
+        -virtio1 $iso_volume \
+        -boot c \
+        -bootdisk virtio1 \
         -net0 model=virtio,bridge=vmbr0 \
         -args '-device virtio-rng-pci'
     qm config $pve_id # show config.

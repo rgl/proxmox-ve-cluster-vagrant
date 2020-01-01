@@ -18,7 +18,7 @@ pveam update
 pveam available # show templates.
 
 # download the alpine template to the iso-templates shared storage.
-pve_template=alpine-3.9-default_20190224_amd64.tar.xz
+pve_template=alpine-3.10-default_20190626_amd64.tar.xz
 pveam download iso-templates $pve_template
 
 # create and start a container.
@@ -28,11 +28,6 @@ for pve_id in 100; do
     pve_disk_size=32M
     pvesm alloc $pve_storage_id $pve_id vm-$pve_id-disk-1 $pve_disk_size
     if [[ "$pve_storage_id" =~ ^ceph-.+ ]]; then
-        # NB disable unsupported rdb device features not supported by the kernel. if we do not disable
-        #    these features, rbd map fails with the following dmesg message:
-        #     rbd: image vm-100-disk-1: image uses unsupported features: 0x38
-        # NB the proxmox ui creates container images with only the layering feature enabled.
-        rbd feature disable $pve_storage_id/vm-$pve_id-disk-1 exclusive-lock,object-map,fast-diff,deep-flatten
         rbd map $pve_storage_id/vm-$pve_id-disk-1
         rbd showmapped
         rbd ls $pve_storage_id

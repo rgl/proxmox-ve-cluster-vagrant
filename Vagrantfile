@@ -82,6 +82,7 @@ Vagrant.configure('2') do |config|
       config.vm.provision :shell,
         path: 'provision.sh',
         args: [
+          n,
           service_ip,
           cluster_network_first_node_ip,
           cluster_network,

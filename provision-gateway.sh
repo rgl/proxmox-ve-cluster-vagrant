@@ -106,10 +106,9 @@ systemctl restart dnsmasq
 
 apt-get install -y nfs-kernel-server
 install -d -o nobody -g nogroup -m 700 /srv/nfs/iso-templates
-cat >>/etc/exports <<EOF
-/srv/nfs/iso-templates $ip/24(fsid=0,rw,no_subtree_check)
-EOF
-systemctl restart nfs-kernel-server
+install -d -m 700 /etc/exports.d
+echo "/srv/nfs/iso-templates $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d/iso-templates.exports
+exportfs -a
 
 # test access to the NFS server using NFSv3 (UDP and TCP) and NFSv4 (TCP).
 showmount -e $ip

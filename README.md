@@ -30,7 +30,6 @@ Install the following Vagrant plugins:
 
 ```bash
 vagrant plugin install vagrant-reload   # see https://github.com/aidanns/vagrant-reload
-vagrant plugin install vagrant-triggers # see https://github.com/emyl/vagrant-triggers
 ```
 
 Run `vagrant up --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.

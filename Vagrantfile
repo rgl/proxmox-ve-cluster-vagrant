@@ -30,11 +30,13 @@ Vagrant.configure('2') do |config|
     lv.keymap = 'pt'
     config.vm.synced_folder '.', '/vagrant', type: 'nfs'
   end
+
   config.vm.provider :virtualbox do |vb|
     vb.linked_clone = true
     vb.memory = 3*1024
     vb.cpus = 4
   end
+
   config.vm.define 'gateway' do |config|
     config.vm.box = 'ubuntu-18.04-amd64'
     config.vm.provider :libvirt do |lv|
@@ -55,6 +57,7 @@ Vagrant.configure('2') do |config|
     config.vm.provision :shell, path: 'provision-postfix.sh'
     config.vm.provision :shell, path: 'provision-dovecot.sh'
   end
+
   (1..number_of_nodes).each do |n|
     name = "pve#{n}"
     fqdn = "#{name}.example.com"
@@ -71,10 +74,10 @@ Vagrant.configure('2') do |config|
       end
       config.vm.provider :virtualbox do |vb, override|
         storage_disk_filename = "#{name}_sdb.vmdk"
-        override.trigger.before :up do
+        override.trigger.before :up do |trigger|
           unless File.exist? storage_disk_filename
-            info "Creating the #{name} #{storage_disk_filename} storage disk..."
-            run "VBoxManage createhd --filename #{storage_disk_filename} --size #{30*1024}"
+            trigger.info = "Creating the #{name} #{storage_disk_filename} storage disk..."
+            trigger.run = {inline: "VBoxManage createhd --filename #{storage_disk_filename} --size #{30*1024}"}
           end
         end
         vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', storage_disk_filename]

@@ -21,6 +21,8 @@ storage_monitor_ips = (1..number_of_nodes).map do |n|
 end.join(';')
 
 Vagrant.configure('2') do |config|
+  config.vagrant.plugins = "vagrant-reload"
+
   config.vm.box = 'proxmox-ve-amd64'
   config.vm.provider :libvirt do |lv, config|
     lv.memory = 3*1024

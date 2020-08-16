@@ -26,10 +26,13 @@ Add the following entries to your `/etc/hosts` file:
 10.1.0.203 pve3.example.com
 ```
 
-Install the following Vagrant plugins:
+Run `vagrant validate` to get the chance to install any missing plugins (notably, [`vagrant-reload`](https://github.com/aidanns/vagrant-reload), which this project requires).
 
 ```bash
-vagrant plugin install vagrant-reload   # see https://github.com/aidanns/vagrant-reload
+vagrant validate # Answer `Y` to install required plugins.
+
+# Or install the plugins manually with:
+# vagrant plugin install vagrant-reload
 ```
 
 Run `vagrant up --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.

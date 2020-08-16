@@ -70,8 +70,8 @@ apt-get install -y iptables iptables-persistent
 sysctl net.ipv4.ip_forward=1
 sed -i -E 's,^\s*#?\s*(net.ipv4.ip_forward=).+,\11,g' /etc/sysctl.conf
 
-# NAT through eth0.
-iptables -t nat -A POSTROUTING -s "$ip/24" ! -d "$ip/24" -o eth0 -j MASQUERADE
+# NAT through enp0s3 (formerly and traditionally eth0).
+iptables -t nat -A POSTROUTING -s "$ip/24" ! -d "$ip/24" -o enp0s3 -j MASQUERADE
 
 # load iptables rules on boot.
 iptables-save >/etc/iptables/rules.v4
@@ -89,7 +89,7 @@ cat >/etc/resolv.conf <<'EOF'
 nameserver 127.0.0.1
 EOF
 cat >/etc/dnsmasq.d/local.conf <<EOF
-interface=eth1
+interface=enp0s8
 dhcp-range=10.1.0.2,10.1.0.200,1m
 host-record=example.com,$ip
 host-record=pve1.example.com,10.1.0.201

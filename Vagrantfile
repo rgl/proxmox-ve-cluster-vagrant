@@ -50,12 +50,12 @@ Vagrant.configure('2') do |config|
     certificate_ip_addr = service_ip_addr.clone
     (1..number_of_nodes).each do |n|
       certificate_ip = certificate_ip_addr.to_s; certificate_ip_addr = certificate_ip_addr.succ
-      config.vm.provision :shell, path: 'provision-certificate.sh', args: ["pve#{n}.example.com", certificate_ip]
+      config.vm.provision :shell, path: 'provision/certificate.sh', args: ["pve#{n}.example.com", certificate_ip]
     end
-    config.vm.provision :shell, path: 'provision-certificate.sh', args: ['example.com', gateway_ip]
-    config.vm.provision :shell, path: 'provision-gateway.sh', args: gateway_ip
-    config.vm.provision :shell, path: 'provision-postfix.sh'
-    config.vm.provision :shell, path: 'provision-dovecot.sh'
+    config.vm.provision :shell, path: 'provision/certificate.sh', args: ['example.com', gateway_ip]
+    config.vm.provision :shell, path: 'provision/gateway.sh', args: gateway_ip
+    config.vm.provision :shell, path: 'provision/postfix.sh'
+    config.vm.provision :shell, path: 'provision/dovecot.sh'
   end
 
   (1..number_of_nodes).each do |n|
@@ -82,8 +82,8 @@ Vagrant.configure('2') do |config|
         end
         vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', storage_disk_filename]
       end
-      config.vm.provision :shell,
-        path: 'provision.sh',
+      config.vm.provision 'main', type: 'shell',
+        path: 'provision/main.sh',
         args: [
           n,
           service_ip,
@@ -94,16 +94,16 @@ Vagrant.configure('2') do |config|
           gateway_ip
         ]
       config.vm.provision :reload
-      config.vm.provision :shell, path: 'provision-pveproxy-certificate.sh', args: service_ip
-      config.vm.provision :shell, path: 'provision-storage.sh', args: [
+      config.vm.provision 'pveproxy-certificate', type: 'shell', path: 'provision/pveproxy-certificate.sh', args: service_ip
+      config.vm.provision 'storage', type: 'shell', path: 'provision/storage.sh', args: [
           storage_network_first_node_ip,
           storage_network,
           storage_ip,
           storage_monitor_ips
         ]
-      config.vm.provision :shell, path: 'provision-alpine-template-container.sh', args: [service_ip, gateway_ip]
-      config.vm.provision :shell, path: 'provision-debian-live-virtual-machine.sh', args: gateway_ip
-      config.vm.provision :shell, path: 'summary.sh', args: service_ip
+      config.vm.provision 'alpine-template-container', type: 'shell', path: 'provision/alpine-template-container.sh', args: [service_ip, gateway_ip]
+      config.vm.provision 'debian-live-virtual-machine', type: 'shell', path: 'provision/debian-live-virtual-machine.sh', args: gateway_ip
+      config.vm.provision 'summary', type: 'shell', path: 'provision/summary.sh', args: service_ip
     end
   end
 end

@@ -1,12 +1,6 @@
 #!/bin/bash
 set -eux
 
-dmi_sys_vendor=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
-if [[ "$dmi_sys_vendor" != 'QEMU' ]]; then
-    # bail because QEMU is needed to run Virtual Machines.
-    exit 0
-fi
-
 gateway_ip=$1
 fqdn=$(hostname --fqdn)
 dn=$(hostname)
@@ -57,7 +51,7 @@ EOF
         -onboot 1 \
         -ostype l26 \
         -cpu host \
-        -cores 4 \
+        -cores 1 \
         -memory 512 \
         -cdrom $pve_storage_id:vm-$pve_id-cloudinit \
         -cicustom user=$cloud_init_user_data_volume \

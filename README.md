@@ -10,8 +10,7 @@ The second node (`pve2.example.com`) is running:
   * You can login with the `root` username and `vagrant` password.
 * One Debian Live virtual machine provisioned by [provision-debian-live-virtual-machine.sh](provision-debian-live-virtual-machine.sh) and booted from the [rgl/debian-live-builder-vagrant](https://github.com/rgl/debian-live-builder-vagrant) iso.
   * You can login with the `vagrant` username and no password.
-  * This VM is also configured through [cloud-init](https://cloudinit.readthedocs.io/) as [supported by proxmox](https://pve.proxmox.com/pve-docs/pve-admin-guide.html#qm_cloud_init).
-  * **NB** This does not work in VirtualBox because it has no support for nested virtualization.
+  * This VM is also configured through [cloud-init](https://cloudinit.readthedocs.io/) as [supported by proxmox](https://pve.proxmox.com/pve-docs/pve-admin-guide.html#qm_cloud_init). (This requires VirtualBox 6.1 or later.)
 
 # Usage
 

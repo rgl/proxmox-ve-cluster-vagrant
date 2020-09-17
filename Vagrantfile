@@ -81,6 +81,7 @@ Vagrant.configure('2') do |config|
           end
         end
         vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', storage_disk_filename]
+        vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-vms']
       end
       config.vm.provision :shell,
         path: 'provision.sh',

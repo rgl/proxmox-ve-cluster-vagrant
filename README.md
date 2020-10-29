@@ -32,7 +32,7 @@ Install the following Vagrant plugins:
 vagrant plugin install vagrant-reload   # see https://github.com/aidanns/vagrant-reload
 ```
 
-Run `vagrant up --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.
+Run `vagrant up --no-destroy-on-error --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.
 
 Trust the Example CA. If your host is Ubuntu based, run, in a bash shell:
 

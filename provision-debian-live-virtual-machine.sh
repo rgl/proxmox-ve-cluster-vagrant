@@ -67,7 +67,7 @@ EOF
         --boot c \
         --bootdisk virtio1 \
         --net0 model=virtio,bridge=vmbr0 \
-        --args '-device virtio-rng-pci'
+        --rng0 /dev/urandom
     qm config $pve_id # show config.
     qm start $pve_id
     qm status $pve_id

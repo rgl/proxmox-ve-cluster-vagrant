@@ -40,6 +40,7 @@ for pve_id in 100; do
     fi
     pct create $pve_id \
         iso-templates:vztmpl/$pve_template \
+        --unprivileged 0 \
         --onboot 1 \
         --ostype alpine \
         --hostname alpine-$pve_id \

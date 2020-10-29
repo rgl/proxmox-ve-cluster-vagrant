@@ -51,23 +51,23 @@ runcmd:
   - systemctl start qemu-guest-agent
 EOF
     qm create $pve_id \
-        -name debian-live-$pve_id \
-        -keyboard pt \
-        -agent enabled=1 \
-        -onboot 1 \
-        -ostype l26 \
-        -cpu host \
-        -cores 4 \
-        -memory 512 \
-        -cdrom $pve_storage_id:vm-$pve_id-cloudinit \
-        -cicustom user=$cloud_init_user_data_volume \
-        -scsihw virtio-scsi-pci \
-        -virtio0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
-        -virtio1 $iso_volume \
-        -boot c \
-        -bootdisk virtio1 \
-        -net0 model=virtio,bridge=vmbr0 \
-        -args '-device virtio-rng-pci'
+        --name debian-live-$pve_id \
+        --keyboard pt \
+        --agent enabled=1 \
+        --onboot 1 \
+        --ostype l26 \
+        --cpu host \
+        --cores 4 \
+        --memory 512 \
+        --cdrom $pve_storage_id:vm-$pve_id-cloudinit \
+        --cicustom user=$cloud_init_user_data_volume \
+        --scsihw virtio-scsi-pci \
+        --virtio0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
+        --virtio1 $iso_volume \
+        --boot c \
+        --bootdisk virtio1 \
+        --net0 model=virtio,bridge=vmbr0 \
+        --args '-device virtio-rng-pci'
     qm config $pve_id # show config.
     qm start $pve_id
     qm status $pve_id

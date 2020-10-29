@@ -40,14 +40,14 @@ for pve_id in 100; do
     fi
     pct create $pve_id \
         iso-templates:vztmpl/$pve_template \
-        -onboot 1 \
-        -ostype alpine \
-        -hostname alpine-$pve_id \
-        -cores 1 \
-        -memory 32 \
-        -swap 0 \
-        -rootfs $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
-        -net0 name=eth0,bridge=vmbr0,gw=$gateway_ip,ip=$pve_ip/24
+        --onboot 1 \
+        --ostype alpine \
+        --hostname alpine-$pve_id \
+        --cores 1 \
+        --memory 32 \
+        --swap 0 \
+        --rootfs $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
+        --net0 name=eth0,bridge=vmbr0,gw=$gateway_ip,ip=$pve_ip/24
     pct config $pve_id # show config.
     pct start $pve_id
     pct exec $pve_id sh <<EOF

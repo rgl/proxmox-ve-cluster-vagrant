@@ -2,6 +2,7 @@
 set -eux
 
 ip=$1
+upstream_dns_server=$2
 
 # configure apt for non-interactive mode.
 export DEBIAN_FRONTEND=noninteractive
@@ -95,7 +96,7 @@ host-record=example.com,$ip
 host-record=pve1.example.com,10.1.0.201
 host-record=pve2.example.com,10.1.0.202
 host-record=pve3.example.com,10.1.0.203
-server=8.8.8.8
+server=$upstream_dns_server
 EOF
 systemctl restart dnsmasq
 
@@ -113,10 +114,11 @@ echo "/srv/nfs/snippets $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d/snip
 exportfs -a
 
 # test access to the NFS server using NFSv3 (UDP and TCP) and NFSv4 (TCP).
-showmount -e $ip
+rpcinfo $ip
 rpcinfo -u $ip nfs 3
 rpcinfo -t $ip nfs 3
 rpcinfo -t $ip nfs 4
+showmount -e $ip
 
 
 #

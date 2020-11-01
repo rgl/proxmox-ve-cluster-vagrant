@@ -2,11 +2,15 @@
 # have to force a --no-parallel execution.
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
+# to be able to configure hyper-v vm and add extra disks.
+ENV['VAGRANT_EXPERIMENTAL'] = 'typed_triggers,disks'
+
 number_of_nodes = 3
 service_network_first_node_ip = '10.1.0.201'
 cluster_network_first_node_ip = '10.2.0.201'; cluster_network='10.2.0.0'
 storage_network_first_node_ip = '10.3.0.201'; storage_network='10.3.0.0'
 gateway_ip = '10.1.0.254'
+upstream_dns_server = '8.8.8.8'
 
 require 'ipaddr'
 service_ip_addr = IPAddr.new service_network_first_node_ip
@@ -37,6 +41,47 @@ Vagrant.configure('2') do |config|
     vb.cpus = 4
   end
 
+  config.vm.provider :hyperv do |hv, config|
+    hv.linked_clone = true
+    hv.enable_virtualization_extensions = true # nested virtualization.
+    hv.memory = 3*1024
+    hv.cpus = 4
+    hv.vlan_id = ENV['HYPERV_VLAN_ID']
+    # set the management network adapter.
+    # see https://github.com/hashicorp/vagrant/issues/7915
+    # see https://github.com/hashicorp/vagrant/blob/10faa599e7c10541f8b7acf2f8a23727d4d44b6e/plugins/providers/hyperv/action/configure.rb#L21-L35
+    config.vm.network :private_network,
+      bridge: ENV['HYPERV_SWITCH_NAME'] if ENV['HYPERV_SWITCH_NAME']
+    config.vm.synced_folder '.', '/vagrant',
+      type: 'smb',
+      smb_username: ENV['VAGRANT_SMB_USERNAME'] || ENV['USER'],
+      smb_password: ENV['VAGRANT_SMB_PASSWORD']
+    # further configure the VM (e.g. manage the network adapters).
+    config.trigger.before :'VagrantPlugins::HyperV::Action::StartInstance', type: :action do |trigger|
+      trigger.ruby do |env, machine|
+        # see https://github.com/hashicorp/vagrant/blob/v2.2.10/lib/vagrant/machine.rb#L13
+        # see https://github.com/hashicorp/vagrant/blob/v2.2.10/plugins/kernel_v2/config/vm.rb#L716
+        bridges = []
+        machine.config.vm.networks.select{|type, options| type == :private_network && options.key?(:hyperv__bridge)}.each do |type, options|
+          mac_address_spoofing = false
+          mac_address_spoofing = options[:hyperv__mac_address_spoofing] if options.key?(:hyperv__mac_address_spoofing)
+          bridges.push([options[:hyperv__bridge], mac_address_spoofing])
+        end
+        system(
+          'PowerShell',
+          '-NoLogo',
+          '-NoProfile',
+          '-ExecutionPolicy',
+          'Bypass',
+          '-File',
+          'configure-hyperv.ps1',
+          machine.id,
+          bridges.to_json
+        )
+      end
+    end
+  end
+
   config.vm.define 'gateway' do |config|
     config.vm.box = 'ubuntu-20.04-amd64'
     config.vm.provider :libvirt do |lv|
@@ -45,15 +90,28 @@ Vagrant.configure('2') do |config|
     config.vm.provider :virtualbox do |vb|
       vb.memory = 512
     end
+    config.vm.provider :hyperv do |hv, override|
+      hv.memory = 1024
+    end
     config.vm.hostname = 'gateway.example.com'
-    config.vm.network :private_network, ip: gateway_ip, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
+    config.vm.network :private_network,
+      ip: gateway_ip,
+      libvirt__forward_mode: 'none',
+      libvirt__dhcp_enabled: false,
+      hyperv__bridge: 'proxmox-service'
+    config.vm.provision :shell,
+      path: 'configure-hyperv.sh',
+      args: [
+        gateway_ip
+      ],
+      run: 'always'
     certificate_ip_addr = service_ip_addr.clone
     (1..number_of_nodes).each do |n|
       certificate_ip = certificate_ip_addr.to_s; certificate_ip_addr = certificate_ip_addr.succ
       config.vm.provision :shell, path: 'provision-certificate.sh', args: ["pve#{n}.example.com", certificate_ip]
     end
     config.vm.provision :shell, path: 'provision-certificate.sh', args: ['example.com', gateway_ip]
-    config.vm.provision :shell, path: 'provision-gateway.sh', args: gateway_ip
+    config.vm.provision :shell, path: 'provision-gateway.sh', args: [gateway_ip, upstream_dns_server]
     config.vm.provision :shell, path: 'provision-postfix.sh'
     config.vm.provision :shell, path: 'provision-dovecot.sh'
   end
@@ -66,22 +124,34 @@ Vagrant.configure('2') do |config|
     storage_ip = storage_ip_addr.to_s; storage_ip_addr = storage_ip_addr.succ
     config.vm.define name do |config|
       config.vm.hostname = fqdn
-      config.vm.network :private_network, ip: service_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
-      config.vm.network :private_network, ip: cluster_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
-      config.vm.network :private_network, ip: storage_ip, auto_config: false, libvirt__forward_mode: 'none', libvirt__dhcp_enabled: false
       config.vm.provider :libvirt do |lv|
         lv.storage :file, :size => '30G'
       end
       config.vm.provider :virtualbox do |vb, override|
-        storage_disk_filename = "#{name}_sdb.vmdk"
-        override.trigger.before :up do |trigger|
-          unless File.exist? storage_disk_filename
-            trigger.info = "Creating the #{name} #{storage_disk_filename} storage disk..."
-            trigger.run = {inline: "VBoxManage createhd --filename #{storage_disk_filename} --size #{30*1024}"}
-          end
-        end
-        vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', storage_disk_filename]
+        override.vm.disk :disk, size: '30GB', name: 'data'
       end
+      config.vm.provider :hyperv do |hv, override|
+        override.vm.disk :disk, size: '30GB', name: 'data'
+      end
+      config.vm.network :private_network,
+        ip: service_ip,
+        auto_config: false,
+        libvirt__forward_mode: 'none',
+        libvirt__dhcp_enabled: false,
+        hyperv__bridge: 'proxmox-service',
+        hyperv__mac_address_spoofing: true
+      config.vm.network :private_network,
+        ip: cluster_ip,
+        auto_config: false,
+        libvirt__forward_mode: 'none',
+        libvirt__dhcp_enabled: false,
+        hyperv__bridge: 'proxmox-cluster'
+      config.vm.network :private_network,
+        ip: storage_ip,
+        auto_config: false,
+        libvirt__forward_mode: 'none',
+        libvirt__dhcp_enabled: false,
+        hyperv__bridge: 'proxmox-storage'
       config.vm.provision :shell,
         path: 'provision.sh',
         args: [

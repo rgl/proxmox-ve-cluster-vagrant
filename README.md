@@ -66,6 +66,42 @@ Access the Proxmox Web Administration endpoint at either one of the nodes, e.g.,
 
 Login as `root` and use the `vagrant` password.
 
+## Hyper-V
+
+Create the required virtual switches:
+
+```bash
+PowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass <<'EOF'
+@(
+  @{Name='proxmox-service'; IpAddress='10.1.0.1'}
+  @{Name='proxmox-cluster'; IpAddress='10.2.0.1'}
+  @{Name='proxmox-storage'; IpAddress='10.3.0.1'}
+) | ForEach-Object {
+  $switchName = $_.Name
+  $switchIpAddress = $_.IpAddress
+  $networkAdapterName = "vEthernet ($switchName)"
+  $networkAdapterIpAddress = $switchIpAddress
+  $networkAdapterIpPrefixLength = 24
+
+  # create the vSwitch.
+  New-VMSwitch -Name $switchName -SwitchType Internal | Out-Null
+
+  # assign it an host IP address.
+  $networkAdapter = Get-NetAdapter $networkAdapterName
+  $networkAdapter | New-NetIPAddress `
+      -IPAddress $networkAdapterIpAddress `
+      -PrefixLength $networkAdapterIpPrefixLength `
+      | Out-Null
+}
+
+# remove all virtual switches from the windows firewall.
+Set-NetFirewallProfile `
+    -DisabledInterfaceAliases (
+            Get-NetAdapter -name "vEthernet*" | Where-Object {$_.ifIndex}
+        ).InterfaceAlias
+EOF
+```
+
 # Reference
 
  * [Proxmox VE Cluster Manager](https://pve.proxmox.com/wiki/Cluster_Manager)

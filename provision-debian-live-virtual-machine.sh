@@ -2,8 +2,8 @@
 set -eux
 
 dmi_sys_vendor=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
-if [[ "$dmi_sys_vendor" != 'QEMU' ]]; then
-    # bail because QEMU is needed to run Virtual Machines.
+if [[ "$dmi_sys_vendor" != 'QEMU' ]] && [[ "$dmi_sys_vendor" != 'Microsoft Corporation' ]]; then
+    # bail because QEMU/hyperv is needed to run Virtual Machines.
     exit 0
 fi
 

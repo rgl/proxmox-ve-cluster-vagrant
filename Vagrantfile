@@ -61,11 +61,10 @@ Vagrant.configure('2') do |config|
       trigger.ruby do |env, machine|
         # see https://github.com/hashicorp/vagrant/blob/v2.2.10/lib/vagrant/machine.rb#L13
         # see https://github.com/hashicorp/vagrant/blob/v2.2.10/plugins/kernel_v2/config/vm.rb#L716
-        bridges = []
-        machine.config.vm.networks.select{|type, options| type == :private_network && options.key?(:hyperv__bridge)}.each do |type, options|
+        bridges = machine.config.vm.networks.select{|type, options| type == :private_network && options.key?(:hyperv__bridge)}.map do |type, options|
           mac_address_spoofing = false
           mac_address_spoofing = options[:hyperv__mac_address_spoofing] if options.key?(:hyperv__mac_address_spoofing)
-          bridges.push([options[:hyperv__bridge], mac_address_spoofing])
+          [options[:hyperv__bridge], mac_address_spoofing]
         end
         system(
           'PowerShell',

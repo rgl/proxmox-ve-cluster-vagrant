@@ -3,6 +3,7 @@ param(
     $bridgesJson
 )
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 trap {

@@ -128,6 +128,7 @@ Vagrant.configure('2') do |config|
       end
       config.vm.provider :virtualbox do |vb, override|
         override.vm.disk :disk, size: '30GB', name: 'data'
+        vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-vms', '--nested-hw-virt', 'on']
       end
       config.vm.provider :hyperv do |hv, override|
         override.vm.disk :disk, size: '30GB', name: 'data'

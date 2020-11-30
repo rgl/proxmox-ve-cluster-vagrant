@@ -68,6 +68,8 @@ Login as `root` and use the `vagrant` password.
 
 ## Hyper-V
 
+Follow the [rgl/debian-vagrant Hyper-V Usage section](https://github.com/rgl/debian-vagrant#hyper-v-usage).
+
 Create the required virtual switches:
 
 ```bash

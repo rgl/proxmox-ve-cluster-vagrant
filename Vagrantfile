@@ -39,6 +39,8 @@ Vagrant.configure('2') do |config|
     vb.linked_clone = true
     vb.memory = 3*1024
     vb.cpus = 4
+    vb.customize ['modifyvm', :id, '--nested-hw-virt', 'on']
+    vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
   end
 
   config.vm.provider :hyperv do |hv, config|
@@ -128,7 +130,6 @@ Vagrant.configure('2') do |config|
       end
       config.vm.provider :virtualbox do |vb, override|
         override.vm.disk :disk, size: '30GB', name: 'data'
-        vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-vms', '--nested-hw-virt', 'on']
       end
       config.vm.provider :hyperv do |hv, override|
         override.vm.disk :disk, size: '30GB', name: 'data'

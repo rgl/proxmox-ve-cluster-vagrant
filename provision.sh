@@ -79,9 +79,10 @@ cat >>/etc/issue <<EOF
     https://$fqdn:8006/
 
 EOF
-ifup vmbr0
+ifup eth1
 ifup eth2
 ifup eth3
+ifup vmbr0
 iptables-save # show current rules.
 killall agetty | true # force them to re-display the issue file.
 

@@ -34,7 +34,6 @@ if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
 
     # create a storage pool for lxc containers.
     pve_pool_name='ceph-lxc'
-    cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph/$pve_pool_name.keyring
     pveceph createpool $pve_pool_name \
         --size 3 \
         --min_size 2 \
@@ -48,7 +47,6 @@ if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
 
     # create a storage pool for virtual machines.
     pve_pool_name='ceph-vm'
-    cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph/$pve_pool_name.keyring
     pveceph createpool $pve_pool_name \
         --size 3 \
         --min_size 2 \

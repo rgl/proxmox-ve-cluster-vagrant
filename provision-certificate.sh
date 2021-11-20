@@ -3,6 +3,7 @@ set -eux
 
 domain=$1
 ip=$2
+ip2=${3:-}
 ca_file_name='example-ca'
 ca_common_name='Example CA'
 
@@ -56,7 +57,7 @@ if [ ! -f $domain-crt.pem ]; then
         -CAcreateserial \
         -extensions a \
         -extfile <(echo "[a]
-            subjectAltName=DNS:$domain,IP:$ip
+            subjectAltName=DNS:$domain,IP:$ip$([ -n "$ip2" ] && echo -n ",IP:$ip2" || true)
             extendedKeyUsage=critical,serverAuth
             ") \
         -days 365 \

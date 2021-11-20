@@ -106,10 +106,12 @@ Vagrant.configure('2') do |config|
         gateway_ip
       ],
       run: 'always'
-    certificate_ip_addr = service_ip_addr.clone
+    certificate_ip_addr = IPAddr.new service_network_first_node_ip
+    certificate_ip2_addr = IPAddr.new cluster_network_first_node_ip
     (1..number_of_nodes).each do |n|
       certificate_ip = certificate_ip_addr.to_s; certificate_ip_addr = certificate_ip_addr.succ
-      config.vm.provision :shell, path: 'provision-certificate.sh', args: ["pve#{n}.example.com", certificate_ip]
+      certificate_ip2 = certificate_ip2_addr.to_s; certificate_ip2_addr = certificate_ip2_addr.succ
+      config.vm.provision :shell, path: 'provision-certificate.sh', args: ["pve#{n}.example.com", certificate_ip, certificate_ip2]
     end
     config.vm.provision :shell, path: 'provision-certificate.sh', args: ['example.com', gateway_ip]
     config.vm.provision :shell, path: 'provision-gateway.sh', args: [gateway_ip, upstream_dns_server]

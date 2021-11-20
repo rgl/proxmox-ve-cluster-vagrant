@@ -20,10 +20,10 @@ Build and install the [proxmox-ve Base Box](https://github.com/rgl/proxmox-ve).
 Add the following entries to your `/etc/hosts` file:
 
 ```plain
-10.1.0.254 example.com
-10.1.0.201 pve1.example.com
-10.1.0.202 pve2.example.com
-10.1.0.203 pve3.example.com
+10.0.1.254 example.com
+10.0.1.201 pve1.example.com
+10.0.1.202 pve2.example.com
+10.0.1.203 pve3.example.com
 ```
 
 Install the following Vagrant plugins:
@@ -75,9 +75,9 @@ Create the required virtual switches:
 ```bash
 PowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass <<'EOF'
 @(
-  @{Name='proxmox-service'; IpAddress='10.1.0.1'}
-  @{Name='proxmox-cluster'; IpAddress='10.2.0.1'}
-  @{Name='proxmox-storage'; IpAddress='10.3.0.1'}
+  @{Name='proxmox-service'; IpAddress='10.0.1.1'}
+  @{Name='proxmox-cluster'; IpAddress='10.0.2.1'}
+  @{Name='proxmox-storage'; IpAddress='10.0.3.1'}
 ) | ForEach-Object {
   $switchName = $_.Name
   $switchIpAddress = $_.IpAddress

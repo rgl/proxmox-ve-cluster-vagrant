@@ -6,10 +6,10 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 ENV['VAGRANT_EXPERIMENTAL'] = 'typed_triggers,disks'
 
 number_of_nodes = 3
-service_network_first_node_ip = '10.1.0.201'
-cluster_network_first_node_ip = '10.2.0.201'; cluster_network='10.2.0.0'
-storage_network_first_node_ip = '10.3.0.201'; storage_network='10.3.0.0'
-gateway_ip = '10.1.0.254'
+service_network_first_node_ip = '10.0.1.201'
+cluster_network_first_node_ip = '10.0.2.201'; cluster_network='10.0.2.0'
+storage_network_first_node_ip = '10.0.3.201'; storage_network='10.0.3.0'
+gateway_ip = '10.0.1.254'
 upstream_dns_server = '8.8.8.8'
 
 require 'ipaddr'

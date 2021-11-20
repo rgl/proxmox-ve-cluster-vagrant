@@ -181,9 +181,9 @@ if [ "$cluster_ip" == "$cluster_network_first_node_ip" ]; then
 else
     apt-get install -y --no-install-recommends expect
     # add the node to the cluster by automatically entering the root password and accept the host SSH key fingerprint. e.g.:
-    #   pve2: Please enter superuser (root) password for '10.2.0.201':
-    #   pve2: Etablishing API connection with host '10.2.0.201'
-    #   pve2: The authenticity of host '10.2.0.201' can't be established.
+    #   pve2: Please enter superuser (root) password for '10.0.2.201':
+    #   pve2: Etablishing API connection with host '10.0.2.201'
+    #   pve2: The authenticity of host '10.0.2.201' can't be established.
     #   pve2: X509 SHA256 key fingerprint is 4B:6A:76:6F:32:31:A5:52:D4:C9:D3:94:23:CF:DD:35:AC:6D:AC:8D:81:42:D6:51:DA:E2:CC:C9:BD:92:0C:61.
     #   pve2: Are you sure you want to continue connecting (yes/no)? 
     expect <<EOF

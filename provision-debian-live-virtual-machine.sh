@@ -56,10 +56,10 @@ EOF
         --cdrom $pve_storage_id:vm-$pve_id-cloudinit \
         --cicustom user=$cloud_init_user_data_volume \
         --scsihw virtio-scsi-pci \
-        --virtio0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size \
-        --virtio1 $iso_volume \
+        --scsi0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size,discard=on,ssd=1 \
+        --scsi1 $iso_volume,media=cdrom,ro=1 \
         --boot c \
-        --bootdisk virtio1 \
+        --bootdisk scsi1 \
         --net0 model=virtio,bridge=vmbr0 \
         --rng0 /dev/urandom
     qm config $pve_id # show config.

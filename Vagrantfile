@@ -12,6 +12,8 @@ storage_network_first_node_ip = '10.0.3.201'; storage_network='10.0.3.0'
 gateway_ip = '10.0.1.254'
 upstream_dns_server = '8.8.8.8'
 
+storage_mtu = 9000
+
 require 'ipaddr'
 service_ip_addr = IPAddr.new service_network_first_node_ip
 cluster_ip_addr = IPAddr.new cluster_network_first_node_ip
@@ -155,6 +157,7 @@ Vagrant.configure('2') do |config|
       config.vm.network :private_network,
         ip: storage_ip,
         auto_config: false,
+        libvirt__mtu: storage_mtu,
         libvirt__forward_mode: 'none',
         libvirt__dhcp_enabled: false,
         hyperv__bridge: 'proxmox-storage'
@@ -167,7 +170,8 @@ Vagrant.configure('2') do |config|
           cluster_network,
           cluster_ip,
           storage_ip,
-          gateway_ip
+          gateway_ip,
+          storage_mtu,
         ]
       config.vm.provision :reload
       config.vm.provision :shell, path: 'provision-pveproxy-certificate.sh', args: service_ip

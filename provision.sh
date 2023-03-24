@@ -8,6 +8,7 @@ cluster_network=$1; shift
 cluster_ip=$1; shift
 storage_ip=$1; shift
 gateway_ip=$1; shift
+storage_mtu=$1; shift
 fqdn=$(hostname --fqdn)
 domain=$(hostname --domain)
 dn=$(hostname)
@@ -43,6 +44,7 @@ iface eth3 inet static
     # storage network.
     address $storage_ip
     netmask 255.255.255.0
+    mtu $storage_mtu
 
 auto vmbr0
 iface vmbr0 inet static

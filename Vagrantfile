@@ -30,8 +30,11 @@ Vagrant.configure('2') do |config|
     lv.memory = 3*1024
     lv.cpus = 4
     lv.cpu_mode = 'host-passthrough'
-    lv.nested = true
+    lv.nested = true # nested virtualization.
     lv.keymap = 'pt'
+    lv.disk_bus = 'scsi'
+    lv.disk_device = 'sda'
+    lv.disk_driver :discard => 'unmap', :cache => 'unsafe'
     config.vm.synced_folder '.', '/vagrant', type: 'nfs', nfs_version: '4.2', nfs_udp: false
   end
 
@@ -128,7 +131,7 @@ Vagrant.configure('2') do |config|
     config.vm.define name do |config|
       config.vm.hostname = fqdn
       config.vm.provider :libvirt do |lv|
-        lv.storage :file, :size => '30G'
+        lv.storage :file, :size => '30G', :bus => 'scsi', :discard => 'unmap', :cache => 'unsafe'
       end
       config.vm.provider :virtualbox do |vb, override|
         override.vm.disk :disk, size: '30GB', name: 'data'

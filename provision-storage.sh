@@ -8,7 +8,7 @@ storage_monitor_ips=$4
 
 dmi_sys_vendor=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
 if [ "$dmi_sys_vendor" == 'QEMU' ]; then
-    osd_disk_device='/dev/vdb'
+    osd_disk_device='/dev/sdb'
 else
     osd_disk_device='/dev/sdb'
 fi

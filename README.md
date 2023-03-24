@@ -32,7 +32,11 @@ Install the following Vagrant plugins:
 vagrant plugin install vagrant-reload   # see https://github.com/aidanns/vagrant-reload
 ```
 
-Run `vagrant up --no-destroy-on-error --provider=libvirt` (or `--provider=virtualbox`) to launch the 3-node cluster.
+Start the environment:
+
+```bash
+vagrant up --no-destroy-on-error --no-tty --provider=libvirt
+```
 
 Trust the Example CA. If your host is Ubuntu based, run, in a bash shell:
 
@@ -62,7 +66,9 @@ Import-Certificate `
     -CertStoreLocation Cert:/LocalMachine/Root
 ```
 
-Access the Proxmox Web Administration endpoint at either one of the nodes, e.g., at [https://pve1.example.com:8006](https://pve1.example.com:8006).
+Access the Proxmox Web Administration endpoint at either one of the nodes, e.g., at:
+
+https://pve1.example.com:8006
 
 Login as `root` and use the `vagrant` password.
 

@@ -12,7 +12,7 @@ if [[ "$dn" != 'pve2' ]]; then
 fi
 
 # download the iso to the iso-templates shared storage.
-iso_url=https://github.com/rgl/debian-live-builder-vagrant/releases/download/v20200831/debian-live-20200831-amd64.iso
+iso_url=https://github.com/rgl/debian-live-builder-vagrant/releases/download/v20221207/debian-live-20221207-amd64.iso
 iso_volume=iso-templates:iso/$(basename $iso_url)
 iso_path=$(pvesm path $iso_volume)
 if [[ ! -f $iso_path ]]; then

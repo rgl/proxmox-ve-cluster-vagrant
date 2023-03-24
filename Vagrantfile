@@ -84,15 +84,15 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'gateway' do |config|
-    config.vm.box = 'ubuntu-20.04-amd64'
+    config.vm.box = 'ubuntu-22.04-amd64'
     config.vm.provider :libvirt do |lv|
-      lv.memory = 512
+      lv.memory = 1*1024
     end
     config.vm.provider :virtualbox do |vb|
-      vb.memory = 512
+      vb.memory = 1*1024
     end
     config.vm.provider :hyperv do |hv, override|
-      hv.memory = 1024
+      hv.memory = 1*1024
     end
     config.vm.hostname = 'gateway.example.com'
     config.vm.network :private_network,

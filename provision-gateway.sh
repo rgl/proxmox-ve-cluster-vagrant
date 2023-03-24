@@ -113,10 +113,8 @@ echo "/srv/nfs/iso-templates $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d
 echo "/srv/nfs/snippets $ip/24(fsid=0,rw,no_subtree_check)" >/etc/exports.d/snippets.exports
 exportfs -a
 
-# test access to the NFS server using NFSv3 (UDP and TCP) and NFSv4 (TCP).
+# test access to the NFS server using NFSv4 (TCP).
 rpcinfo $ip
-rpcinfo -u $ip nfs 3
-rpcinfo -t $ip nfs 3
 rpcinfo -t $ip nfs 4
 showmount -e $ip
 

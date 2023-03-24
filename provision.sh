@@ -167,14 +167,14 @@ if [ "$cluster_ip" == "$cluster_network_first_node_ip" ]; then
     pvesm add nfs iso-templates \
         --server $gateway_ip \
         --export /srv/nfs/iso-templates \
-        --options vers=3 \
+        --options vers=4 \
         --content iso,vztmpl
 
     # add the snippets shared storage pool.
     pvesm add nfs snippets \
         --server $gateway_ip \
         --export /srv/nfs/snippets \
-        --options vers=3 \
+        --options vers=4 \
         --content snippets
 fi
 

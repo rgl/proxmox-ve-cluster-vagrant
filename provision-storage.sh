@@ -29,9 +29,6 @@ if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
     pveceph createmon
     mkdir /etc/pve/priv/ceph
 
-    # delete the default rbd storage pool.
-    pveceph destroypool rbd
-
     # create a storage pool for lxc containers.
     pve_pool_name='ceph-lxc'
     pveceph createpool $pve_pool_name \
@@ -60,6 +57,12 @@ if [ "$storage_ip" == "$storage_network_first_node_ip" ]; then
 else
     pveceph createmon
 fi
+
+# wait for ceph to be ready.
+# TODO find a better way.
+# NB without this, the pveceph createosd command will fail with:
+#       got timeout
+sleep 5
 
 # create an OSD in a disk.
 pveceph createosd $osd_disk_device

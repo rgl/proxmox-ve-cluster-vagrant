@@ -53,7 +53,7 @@ EOF
         --cpu host \
         --cores 1 \
         --memory 512 \
-        --cdrom $pve_storage_id:vm-$pve_id-cloudinit \
+        --cdrom $pve_storage_id:cloudinit \
         --cicustom user=$cloud_init_user_data_volume \
         --scsihw virtio-scsi-pci \
         --scsi0 $pve_storage_id:vm-$pve_id-disk-1,size=$pve_disk_size,discard=on,ssd=1 \

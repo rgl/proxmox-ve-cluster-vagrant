@@ -6,6 +6,7 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 ENV['VAGRANT_EXPERIMENTAL'] = 'typed_triggers,disks'
 
 number_of_nodes = 3
+vagrant_management_network = '10.1.0.0'
 service_network_first_node_ip = '10.0.1.201'
 cluster_network_first_node_ip = '10.0.2.201'; cluster_network='10.0.2.0'
 storage_network_first_node_ip = '10.0.3.201'; storage_network='10.0.3.0'
@@ -46,6 +47,7 @@ Vagrant.configure('2') do |config|
     vb.cpus = 4
     vb.customize ['modifyvm', :id, '--nested-hw-virt', 'on']
     vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+    vb.customize ['modifyvm', :id, '--natnet1', vagrant_management_network]
   end
 
   config.vm.provider :hyperv do |hv, config|

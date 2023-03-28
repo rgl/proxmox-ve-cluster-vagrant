@@ -6,7 +6,7 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 ENV['VAGRANT_EXPERIMENTAL'] = 'typed_triggers,disks'
 
 number_of_nodes = 3
-vagrant_management_network = '10.1.0.0'
+vagrant_management_network = '10.1.0.0/24'
 service_network_first_node_ip = '10.0.1.201'
 cluster_network_first_node_ip = '10.0.2.201'; cluster_network='10.0.2.0'
 storage_network_first_node_ip = '10.0.3.201'; storage_network='10.0.3.0'
